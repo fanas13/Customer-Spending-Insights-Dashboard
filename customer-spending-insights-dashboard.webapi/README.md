@@ -54,7 +54,7 @@ customer-spending-insights-dashboard.webapi/
 
 ## ⚙️ Configuration
 
-Create a `.env` (or copy `.env.example`) with:
+Create a `.env` with:
 
 ```env
 NODE_ENV=development
@@ -228,21 +228,6 @@ CORS_ORIGIN=http://localhost:5173
 To allow multiple origins:
 ```
 CORS_ORIGIN=http://localhost:5173,http://localhost:3001
-```
-
----
-
-## 🧱 Suggested Commit History (for a clean narrative)
-
-```
-chore: init npm + ESM + scripts
-feat: add express app with health + not found handler
-feat: add customers routes/controllers/services
-feat: add mock data + query validation (zod)
-feat: implement all endpoints (profile, summary, categories, trends, tx, goals, filters)
-chore: add pino logging + cors + dotenv
-chore: add Dockerfile and docker-compose.yml
-docs: add openapi.json (3.1) and README
 ```
 
 ---
