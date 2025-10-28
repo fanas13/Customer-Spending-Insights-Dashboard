@@ -1,80 +1,73 @@
-const { z } = require('zod');
-const svc = require('../services/customers.service');
+// src/controllers/customers.controller.js
+import { z } from 'zod';
+import * as svc from '../services/customers.service.js';
 
-function isIsoDate(s) {
-  return !s || !Number.isNaN(Date.parse(s));
+// ------- helpers -------
+const periodSchema = z.enum(['7d', '30d', '90d', '1y']).optional();
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD');
+
+export async function getProfile(req, res) {
+  const { customerId } = req.params;
+  const profile = svc.getProfile(customerId);
+  if (!profile) return res.status(404).json({ error: 'Customer not found' });
+  return res.json(profile);
 }
 
-function getProfile(req, res) {
-  const data = svc.getProfile(req.params.customerId);
-  if (!data) return res.status(404).json({ error: 'Customer not found' });
-  return res.json(data);
-}
-
-function getSpendingSummary(req, res) {
-  const schema = z.object({ period: z.enum(['7d', '30d', '90d', '1y']).optional() });
-  const parsed = schema.safeParse(req.query);
+export async function getSpendingSummary(req, res) {
+  const { customerId } = req.params;
+  const parsed = z.object({ period: periodSchema }).safeParse(req.query);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-  const { period } = parsed.data;
-  return res.json(svc.getSpendingSummary(period));
+  const { period = '30d' } = parsed.data;
+  return res.json(svc.getSpendingSummary(customerId, { period }));
 }
 
-function getSpendingByCategory(req, res) {
-  const schema = z.object({
-    period: z.enum(['7d', '30d', '90d', '1y']).optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-  }).refine(
-    (v) => !(v.period && (v.startDate || v.endDate)),
-    { message: 'Use either period OR startDate/endDate, not both' },
-  ).refine(
-    (v) => isIsoDate(v.startDate) && isIsoDate(v.endDate),
-    { message: 'Invalid date format; expected YYYY-MM-DD' },
-  );
-
-  const parsed = schema.safeParse(req.query);
+export async function getSpendingByCategory(req, res) {
+  const { customerId } = req.params;
+  const parsed = z.object({
+    period: periodSchema,
+    startDate: dateSchema.optional(),
+    endDate: dateSchema.optional()
+  }).safeParse(req.query);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
   const { period, startDate, endDate } = parsed.data;
-  return res.json(svc.getSpendingByCategory(req.params.customerId, period, startDate, endDate));
+  return res.json(svc.getSpendingByCategory(customerId, { period, startDate, endDate }));
 }
 
-function getSpendingTrends(req, res) {
-  const schema = z.object({ months: z.coerce.number().min(1).max(24).optional() });
-  const parsed = schema.safeParse(req.query);
+export async function getSpendingTrends(req, res) {
+  const { customerId } = req.params;
+  const parsed = z.object({
+    months: z.coerce.number().min(1).max(24).optional()
+  }).safeParse(req.query);
+
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
   const { months = 12 } = parsed.data;
-  return res.json(svc.getSpendingTrends(months));
+  return res.json(svc.getSpendingTrends(customerId, { months }));
 }
 
-function getTransactions(req, res) {
-  const schema = z.object({
+export async function getTransactions(req, res) {
+  const { customerId } = req.params;
+  const parsed = z.object({
     limit: z.coerce.number().min(1).max(100).optional(),
     offset: z.coerce.number().min(0).optional(),
     category: z.string().optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    sortBy: z.enum(['date_desc', 'date_asc', 'amount_desc', 'amount_asc']).optional(),
-  });
-  const parsed = schema.safeParse(req.query);
+    startDate: dateSchema.optional(),
+    endDate: dateSchema.optional(),
+    sortBy: z.enum(['date_desc', 'date_asc', 'amount_desc', 'amount_asc']).optional()
+  }).safeParse(req.query);
+
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-  return res.json(svc.getTransactions(parsed.data));
+
+  return res.json(svc.getTransactions(customerId, parsed.data));
 }
 
-function getGoals(_req, res) {
-  return res.json(svc.getGoals());
+export async function getGoals(req, res) {
+  const { customerId } = req.params;
+  return res.json(svc.getGoals(customerId));
 }
 
-function getFilters(_req, res) {
-  return res.json(svc.getFilters());
+export async function getFilters(req, res) {
+  const { customerId } = req.params;
+  return res.json(svc.getFilters(customerId));
 }
-
-module.exports = {
-  getProfile,
-  getSpendingSummary,
-  getSpendingByCategory,
-  getSpendingTrends,
-  getTransactions,
-  getGoals,
-  getFilters,
-};

@@ -1,31 +1,50 @@
-import { profile, spendingSummary, categories, trends, transactions, goals, filters } from '../data/mock';
+// src/services/customers.service.js
+import {
+  profile,
+  spendingSummary,
+  categories,
+  trends,
+  transactions as txData,
+  goals,
+  filters
+} from '../data/mock.js';
 
-function getProfile(customerId) {
-  if (customerId !== profile.customerId) return null;
+const clamp = (n, min, max) => Math.max(min, Math.min(Number(n) || min, max));
+const allowedPeriods = ['7d', '30d', '90d', '1y'];
+const normalizePeriod = (p) => (allowedPeriods.includes(p) ? p : '30d');
+
+export function getProfile(customerId) {
+  if (!customerId || customerId !== profile.customerId) return null;
   return profile;
 }
 
-function getSpendingSummary(period) {
-  return { ...spendingSummary, period: period || spendingSummary.period };
+export function getSpendingSummary(_customerId, { period = '30d' } = {}) {
+  const p = normalizePeriod(period);
+  return { ...spendingSummary, period: p };
 }
 
-function getSpendingByCategory(_customerId, period, startDate, endDate) {
+export function getSpendingByCategory(_customerId, { period, startDate, endDate } = {}) {
   const payload = { ...categories };
+  if (period) payload.period = normalizePeriod(period);
   if (startDate && endDate) {
     payload.dateRange = { startDate, endDate };
-  } 
+  }
   return payload;
 }
 
-function getSpendingTrends(months = 12) {
-  const m = Math.max(1, Math.min(Number(months) || 12, 24));
-  const base = [...trends];
+export function getSpendingTrends(_customerId, { months = 12 } = {}) {
+  const m = clamp(months, 1, 24);
+  const base = Array.isArray(trends) ? trends : [];
   const out = [];
-  while (out.length < m) out.push(base[out.length % base.length]);
-  return { trends: out.slice(0, m) };
+  let i = 0;
+  while (out.length < m && base.length > 0) {
+    out.push(base[i % base.length]);
+    i += 1;
+  }
+  return { trends: out };
 }
 
-function sortTx(list, sortBy) {
+function sortTransactions(list, sortBy = 'date_desc') {
   const arr = [...list];
   switch (sortBy) {
     case 'date_asc':
@@ -40,45 +59,52 @@ function sortTx(list, sortBy) {
   }
 }
 
-function getTransactions(params) {
-  const {
-    limit = 20,
-    offset = 0,
-    category,
-    startDate,
-    endDate,
-    sortBy = 'date_desc',
-  } = params;
+export function getTransactions(_customerId, {
+  limit = 20,
+  offset = 0,
+  category,
+  startDate,
+  endDate,
+  sortBy = 'date_desc'
+} = {}) {
+  const lim = clamp(limit, 1, 100);
+  const off = Math.max(0, Number(offset) || 0);
 
-  let list = [...transactions];
-  if (category) list = list.filter((t) => t.category.toLowerCase() === String(category).toLowerCase());
-  if (startDate) list = list.filter((t) => new Date(t.date) >= new Date(startDate));
-  if (endDate) list = list.filter((t) => new Date(t.date) <= new Date(endDate));
+  let list = Array.isArray(txData) ? [...txData] : [];
 
-  list = sortTx(list, sortBy);
+  if (category) {
+    const c = String(category).toLowerCase();
+    list = list.filter(t => String(t.category).toLowerCase() === c);
+  }
+  if (startDate) {
+    const sd = new Date(startDate);
+    if (!Number.isNaN(+sd)) list = list.filter(t => new Date(t.date) >= sd);
+  }
+  if (endDate) {
+    const ed = new Date(endDate);
+    if (!Number.isNaN(+ed)) list = list.filter(t => new Date(t.date) <= ed);
+  }
+
+  list = sortTransactions(list, sortBy);
 
   const total = list.length;
-  const page = list.slice(Number(offset), Number(offset) + Math.min(Number(limit), 100));
+  const page = list.slice(off, off + lim);
+
   return {
     transactions: page,
-    pagination: { total, limit: Number(limit), offset: Number(offset), hasMore: Number(offset) + Number(limit) < total },
+    pagination: {
+      total,
+      limit: lim,
+      offset: off,
+      hasMore: off + lim < total
+    }
   };
 }
 
-function getGoals() {
+export function getGoals(_customerId) {
   return goals;
 }
 
-function getFilters() {
+export function getFilters(_customerId) {
   return filters;
 }
-
-export default {
-  getProfile,
-  getSpendingSummary,
-  getSpendingByCategory,
-  getSpendingTrends,
-  getTransactions,
-  getGoals,
-  getFilters,
-};
