@@ -1,9 +1,9 @@
-const { Router } = require('express');
-const customersRouter = require('./customers');
-const docsRouter = require('./docs');
+// src/routes/index.js
+import { Router } from 'express';
+import customersRouter from './customers.routes.js';
 
 const router = Router();
-router.use('/customers', customersRouter);
-router.use('/docs', docsRouter); // Swagger UI
 
-module.exports = router;
+router.use('/customers', customersRouter);
+
+export default router;
