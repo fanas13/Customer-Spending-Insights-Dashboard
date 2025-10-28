@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.1/schema/2022-10-07
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: Customer Spending Insights Dashboard API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/customers/{customerId}/profile:
+    get:
+      summary: Get customer profile
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: OK }
