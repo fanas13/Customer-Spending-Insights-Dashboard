@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import AppHeader from './components/AppHeader.jsx';
+import AppHeader from './components/AppHeader';
 
 export default function App() {
-  const defaultCustomerId = '12345'
+  const defaultCustomerId = '12345';
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppHeader />
