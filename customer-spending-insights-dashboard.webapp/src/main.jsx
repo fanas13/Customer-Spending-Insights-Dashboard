@@ -1,10 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Container from '@mui/material/Container'
+import Box from '@mui/material/Box'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+export default function App() {
+  const defaultCustomerId = '12345'
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppHeader />
+      <Container sx={{ py: 3 }}>
+        <Routes>
+          <Route path="/" element={<Navigate to={`/customers/${defaultCustomerId}`} replace />} />
+        </Routes>
+      </Container>
+    </Box>
+  )
+}
