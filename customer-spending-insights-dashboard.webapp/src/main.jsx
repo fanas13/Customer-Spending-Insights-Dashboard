@@ -1,6 +1,7 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Container from '@mui/material/Container'
-import Box from '@mui/material/Box'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import AppHeader from './components/AppHeader.jsx';
 
 export default function App() {
   const defaultCustomerId = '12345'
