@@ -25,7 +25,7 @@ cd customer-spending-insights-dashboard
 ### 3) API (backend)
 ```bash
 cd customer-spending-insights-dashboard.webapi
-cp .env.example .env   # or set VITE_API_URL in webapp to http://localhost:3000/api
+cp .env.example .env   # or set VITE_API_BASE_URL in webapp to http://localhost:3000/api
 npm install
 npm run dev            # starts on http://localhost:3000
 ```
@@ -37,7 +37,7 @@ cd customer-spending-insights-dashboard.webapp
 npm install
 npm run dev            # defaults to http://localhost:5173
 ```
-If your API is at a different URL, set `VITE_API_URL` in `customer-spending-insights-dashboard.webapp/.env`.
+If your API is at a different URL, set `VITE_API_BASE_URL` in `customer-spending-insights-dashboard.webapp/.env`.
 
 ---
 
@@ -47,11 +47,11 @@ customer-spending-insights-dashboard/
 ├─ customer-spending-insights-dashboard.webapi/   # Express mock API
 │  ├─ src/                                        # routes, controllers, services, data
 │  ├─ Dockerfile
-│  └─ README.api.md
+│  └─ README.md
 ├─ customer-spending-insights-dashboard.webapp/   # React + Vite + MUI 7
 │  ├─ src/                                        # pages, components, theme
 │  ├─ Dockerfile
-│  └─ README.webapp.md
+│  └─ README.md
 └─ README.md                                      # you are here
 ```
 
@@ -65,7 +65,7 @@ customer-spending-insights-dashboard/
 
 ### Web App
 - `.env` (in `webapp`):
-  - `VITE_API_URL=http://localhost:3000/api`
+  - `VITE_API_BASE_URL=http://localhost:3000/api`
 
 ---
 
@@ -81,7 +81,7 @@ docker run --rm -p 3000:3000 --name csid-api csid-api
 # Webapp (expects API at http://host.docker.internal:3000 by default)
 cd ../customer-spending-insights-dashboard.webapp
 docker build -t csid-webapp .
-docker run --rm -p 5173:5173 -e VITE_API_URL=http://host.docker.internal:3000/api --name csid-webapp csid-webapp
+docker run --rm -p 5173:5173 -e VITE_API_BASE_URL=http://host.docker.internal:3000/api --name csid-webapp csid-webapp
 ```
 
 > If `host.docker.internal` is not available on your OS, use your machine IP.
