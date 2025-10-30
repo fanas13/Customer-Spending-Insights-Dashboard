@@ -1,6 +1,6 @@
 # Customer Spending Insights Dashboard — WebApp (React + Material UI v7)
 
-A responsive frontend for the **Customer Spending Insights Dashboard**, built with **React**, **Vite**, and **Material UI v7** (JS). It consumes the companion API you built in `customer-spending-insights-dashboard.webapi`.
+A responsive frontend for the **Customer Spending Insights Dashboard**, built with **React**, **Vite**, and **Material UI v7** (JS). It consumes the companion API built in `customer-spending-insights-dashboard.webapi`.
 
 ---
 
@@ -21,7 +21,7 @@ A responsive frontend for the **Customer Spending Insights Dashboard**, built wi
 - **React 18** + **Vite**
 - **Material UI v7** (`@mui/material`, `@mui/icons-material`, `@mui/material/Grid2`)
 - **JavaScript** (no TypeScript)
-- **ESLint** (optional) with Vite defaults
+- **ESLint** with Vite defaults
 
 ---
 
@@ -59,7 +59,7 @@ customer-spending-insights-dashboard.webapp/
 
 - **Node.js**: v18.x or v20.x
 - Running backend API from the companion project: `customer-spending-insights-dashboard.webapi`  
-  (Default dev URL assumed: `http://localhost:3000/api`)
+  (Default dev URL assumed: `http://localhost:3000`)
 
 > If your API runs elsewhere, set `VITE_API_BASE_URL` accordingly.
 
@@ -70,7 +70,7 @@ customer-spending-insights-dashboard.webapp/
 Create a `.env` file in the webapp root:
 
 ```env
-VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_BASE_URL=http://localhost:3000
 ```
 
 > Vite exposes only variables prefixed with `VITE_` to your client code.
