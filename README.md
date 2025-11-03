@@ -18,7 +18,7 @@ This repository hosts two apps:
 
 ### 2) Clone
 ```bash
-git clone <your-repo-url>.git
+git clone https://github.com/fanas13/Customer-Spending-Insights-Dashboard.git
 cd customer-spending-insights-dashboard
 ```
 
